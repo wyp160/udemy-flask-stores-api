@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+
 # a safe string compare to avoid ascii, unicode encoding errors.
 from werkzeug.security import safe_str_cmp
 
@@ -44,6 +45,9 @@ def auth():
 
 
 class Item(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('price', type=float, required=True, help='This field can not be blank.')
+
     @jwt_required()  # require Header.Authorization = 'Bearer <access_token>'
     def get(self, name):
         item = next(filter(lambda item: item['name'] == name, items), None)
@@ -53,26 +57,23 @@ class Item(Resource):
     @jwt_required()
     def post(self, name):
         if next(filter(lambda item: item['name'] == name, items), None):
-            # bad request
             return {'message': 'An item with the name \'{}\' already exist.'.format(name)}, 400
-        # use force=True to avoid contentType; use silent=True to avoid error and return none
-        request_data = request.get_json()
-        item = {'name': name, 'price': request_data['price']}
+
+        data = Item.parser.parse_args()
+        item = {'name': name, 'price': data['price']}
         items.append(item)
         return item, 201
 
     @jwt_required()
     def put(self, name):
-        price = request.json.get("price", None)
+        data = Item.parser.parse_args()
         item = next(filter(lambda item: item['name'] == name, items), None)
         if not item:
-            item = {'name': name, 'price': price}
+            item = {'name': name, 'price': data['price']}
             items.append(item)
         else:
-            item.update({'price': price})
+            item.update(data)
         return item
-
-        
 
     @jwt_required()
     def delete(self, name):
