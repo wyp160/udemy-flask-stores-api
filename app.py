@@ -4,6 +4,8 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+# a safe string compare to avoid ascii, unicode encoding errors.
+from werkzeug.security import safe_str_cmp
 
 from security import authenticate, identity
 
@@ -51,19 +53,33 @@ class Item(Resource):
     @jwt_required()
     def post(self, name):
         if next(filter(lambda item: item['name'] == name, items), None):
-            return {'message': 'An item with the name \'{}\' already exist.'.format(name)}, 400  # bad request
-        request_data = request.get_json()  # use force=True to avoid contentType; use silent=True to avoid error and return none
+            # bad request
+            return {'message': 'An item with the name \'{}\' already exist.'.format(name)}, 400
+        # use force=True to avoid contentType; use silent=True to avoid error and return none
+        request_data = request.get_json()
         item = {'name': name, 'price': request_data['price']}
         items.append(item)
         return item, 201
 
     @jwt_required()
     def put(self, name):
-        return {'name': name}
+        price = request.json.get("price", None)
+        item = next(filter(lambda item: item['name'] == name, items), None)
+        if not item:
+            item = {'name': name, 'price': price}
+            items.append(item)
+        else:
+            item.update({'price': price})
+        return item
+
         
+
     @jwt_required()
     def delete(self, name):
-        return {'name': name}
+        global items
+        items = [item for item in items if not safe_str_cmp(
+            item['name'], name)]
+        return {'message': 'item deleted'}
 
 
 class ItemList(Resource):
