@@ -10,12 +10,13 @@ items = []
 
 class Item(Resource):
     def get(self, name):
-        for item in items:
-            if item['name'] == name:
-                return item
-        return {'item': None}, 404
-        
+        item = next(filter(lambda item: item['name'] == name, items), None)
+        # item = next(enumerate([item for item in items if item['name'] == name]), None)
+        return {'item': item}, 200 if item else 404
+
     def post(self, name):
+        if next(filter(lambda item: item['name'] == name, items), None):
+            return {'message': 'An item with the name \'{}\' already exist.'.format(name)}, 400  # bad request
         request_data = request.get_json()  # use force=True to avoid contentType; use silent=True to avoid error and return none
         item = {'name': name, 'price': request_data['price']}
         items.append(item)
