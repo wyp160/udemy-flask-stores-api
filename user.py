@@ -1,6 +1,4 @@
 import sqlite3
-from flask import Flask, request
-from flask_restful import Resource, reqparse
 
 
 class User:
@@ -12,7 +10,7 @@ class User:
     @classmethod
     def find_by_username(cls, username):
         connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
-        connection.row_factory = sqlite3.Row  # pylint: disable=no-member, https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.row_factory
+        connection.row_factory = sqlite3.Row  # pylint: disable=no-member
         cursor = connection.cursor()
         result = cursor.execute("SELECT id, username, password FROM USERS WHERE username = ?", (username,))
         row = result.fetchone()
@@ -26,7 +24,8 @@ class User:
     @classmethod
     def find_by_id(cls, _id):
         connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
-        connection.row_factory = sqlite3.Row  # pylint: disable=no-member, https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.row_factory
+        # https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.row_factory
+        connection.row_factory = sqlite3.Row   # pylint: disable=no-member
         cursor = connection.cursor()
         result = cursor.execute("SELECT id, username, password FROM users WHERE id = ?", (_id,))
         row = result.fetchone()
@@ -36,23 +35,3 @@ class User:
             user = None
         connection.close()
         return user
-
-
-class UserRegister(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('username', type=str, required=True, help="This field can not be blank.")
-    parser.add_argument('password', type=str, required=True, help="This field can not be blank.")
-
-    def post(self):
-        data = UserRegister.parser.parse_args()
-        username = data['username']
-        password = data['password']
-        if User.find_by_username(username):
-            return {'message': 'User already exists.'}, 400
-
-        connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
-        cursor = connection.cursor()
-        cursor.execute("INSERT INTO users VALUES (NULL, ?, ?)", (username, password))
-        connection.commit()
-        connection.close()
-        return {"message": "User created."}, 201
