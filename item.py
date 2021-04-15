@@ -53,7 +53,10 @@ class Item(Resource):
 
     @jwt_required()  # require Header.Authorization = 'Bearer <access_token>', https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage/
     def get(self, name):
-        item = Item.get_by_name(name)
+        try:
+            item = Item.get_by_name(name)
+        except sqlite3.Error:  # pylint: disable=no-member
+            return {'message': 'An error occured'}, 500
         if not item:
             return {'message': 'item not found'}, 404
         return {'item': item}
@@ -63,7 +66,10 @@ class Item(Resource):
         if Item.get_by_name(name):
             return {'message': 'An item with the name \'{}\' already exist.'.format(name)}, 400
         data = Item.parser.parse_args()
-        Item.insert_item(name, data['price'])
+        try:
+            Item.insert_item(name, data['price'])
+        except sqlite3.Error:  # pylint: disable=no-member
+            return {'message': 'An error occured'}, 500
         return {'message': 'item added'}, 201
 
     @jwt_required()
