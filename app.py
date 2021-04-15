@@ -17,5 +17,6 @@ api.add_resource(UserLogin, '/auth')
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
 
+if __name__ == '__main__':  # will not run this if this file is imported
+    app.run(port=5000)
 
-app.run(port=5000)
