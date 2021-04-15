@@ -12,7 +12,7 @@ class Item(Resource):
                         help='This field can not be blank.')
 
     @classmethod
-    def retrieve_by_name(cls, name):
+    def get_by_name(cls, name):
         connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
         connection.row_factory = sqlite3.Row  # pylint: disable=no-member
         cursor = connection.cursor()
@@ -42,16 +42,25 @@ class Item(Resource):
         connection.close()
         return True
 
+    @classmethod
+    def delete_item(cls, name):
+        connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM items where name = ?", (name,))
+        connection.commit()
+        connection.close()
+        return True
+
     @jwt_required()  # require Header.Authorization = 'Bearer <access_token>', https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage/
     def get(self, name):
-        item = Item.retrieve_by_name(name)
+        item = Item.get_by_name(name)
         if not item:
             return {'message': 'item not found'}, 404
         return {'item': item}
 
     @jwt_required()
     def post(self, name):
-        if Item.retrieve_by_name(name):
+        if Item.get_by_name(name):
             return {'message': 'An item with the name \'{}\' already exist.'.format(name)}, 400
         data = Item.parser.parse_args()
         Item.insert_item(name, data['price'])
@@ -61,7 +70,7 @@ class Item(Resource):
     def put(self, name):
         data = Item.parser.parse_args()
         price = data['price']
-        item = Item.retrieve_by_name(name)
+        item = Item.get_by_name(name)
         if not item:
             Item.insert_item(name, price)
             return {'message': 'item added'}, 201
@@ -71,10 +80,10 @@ class Item(Resource):
 
     @jwt_required()
     def delete(self, name):
-        global items
-        items = [item for item in items if not safe_str_cmp(
-            item['name'], name)]
-        return {'message': 'item deleted'}
+        if not Item.get_by_name(name):
+            return {'message': 'item not found'}, 404
+        Item.delete_item(name)
+        return {'message': 'item deleted'}, 200
 
 
 class ItemList(Resource):
