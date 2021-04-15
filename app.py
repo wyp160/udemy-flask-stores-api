@@ -5,9 +5,7 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 
-# a safe string compare to avoid ascii, unicode encoding errors.
-from werkzeug.security import safe_str_cmp
-
+from werkzeug.security import safe_str_cmp  # a safe string compare to avoid ascii, unicode encoding errors.
 from security import authenticate, identity
 
 app = Flask(__name__)
@@ -45,8 +43,10 @@ def auth():
 
 
 class Item(Resource):
+
     parser = reqparse.RequestParser()
-    parser.add_argument('price', type=float, required=True, help='This field can not be blank.')
+    parser.add_argument('price', type=float, required=True,
+                        help='This field can not be blank.')
 
     @jwt_required()  # require Header.Authorization = 'Bearer <access_token>'
     def get(self, name):
