@@ -1,16 +1,17 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse
 from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
+# from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 
 from werkzeug.security import safe_str_cmp  # a safe string compare to avoid ascii, unicode encoding errors.
 from security import authenticate, identity
+from user import UserRegister
 
 app = Flask(__name__)
 
-app.secret_key = 'test-secret-key'
+app.secret_key = 'test-secret-key'  # need to passin by env variable
 jwt = JWTManager(app)
 
 api = Api(app)
@@ -48,7 +49,7 @@ class Item(Resource):
     parser.add_argument('price', type=float, required=True,
                         help='This field can not be blank.')
 
-    @jwt_required()  # require Header.Authorization = 'Bearer <access_token>'
+    @jwt_required()  # require Header.Authorization = 'Bearer <access_token>', https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage/
     def get(self, name):
         item = next(filter(lambda item: item['name'] == name, items), None)
         # item = next(enumerate([item for item in items if item['name'] == name]), None)
@@ -91,5 +92,6 @@ class ItemList(Resource):
 
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
+api.add_resource(UserRegister, '/register')
 
 app.run(port=5000)
