@@ -51,6 +51,19 @@ class Item(Resource):
         connection.close()
         return True
 
+    @classmethod
+    def get_all(cls):
+        connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
+        connection.row_factory = sqlite3.Row  # pylint: disable=no-member
+        cursor = connection.cursor()
+        result = cursor.execute("SELECT id, name, price FROM items")
+        rows = result.fetchall()
+        connection.close()
+        if rows:
+            return [{'id': row['id'], 'name': row['name'], 'price': row['price']} for row in rows]
+        else:
+            return None
+
     @jwt_required()  # require Header.Authorization = 'Bearer <access_token>', https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage/
     def get(self, name):
         try:
@@ -76,23 +89,36 @@ class Item(Resource):
     def put(self, name):
         data = Item.parser.parse_args()
         price = data['price']
-        item = Item.get_by_name(name)
-        if not item:
-            Item.insert_item(name, price)
+        old_item = Item.get_by_name(name)
+        if not old_item:
+            try:
+                Item.insert_item(name, price)
+            except sqlite3.Error:  # pylint: disable=no-member
+                return {'message': 'An error occured'}, 500
             return {'message': 'item added'}, 201
         else:
-            Item.update_item(name, price)
+            try:
+                Item.update_item(name, price)
+            except sqlite3.Error:  # pylint: disable=no-member
+                return {'message': 'An error occured'}, 500
             return {'message': 'item updated'}, 202
 
     @jwt_required()
     def delete(self, name):
         if not Item.get_by_name(name):
             return {'message': 'item not found'}, 404
-        Item.delete_item(name)
+        try:
+            Item.delete_item(name)
+        except sqlite3.Error:  # pylint: disable=no-member
+            return {'message': 'An error occured'}, 500
         return {'message': 'item deleted'}, 200
 
 
 class ItemList(Resource):
     @jwt_required()
     def get(self):
+        try:
+            items = Item.get_all()
+        except sqlite3.Error:  # pylint: disable=no-member
+            return {'message': 'An error occured'}, 500
         return {'items': items}
