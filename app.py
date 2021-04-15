@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
@@ -7,13 +9,15 @@ from item import Item, ItemList
 
 app = Flask(__name__)
 
-app.secret_key = 'test-secret-key'  # need to passin by env variable
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this in your code!
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(seconds=1800)
+
 jwt = JWTManager(app)
 
 api = Api(app)
 
 api.add_resource(UserRegister, '/register')
-api.add_resource(UserLogin, '/auth')
+api.add_resource(UserLogin, '/login')
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
 
