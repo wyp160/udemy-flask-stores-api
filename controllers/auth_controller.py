@@ -3,8 +3,8 @@ from flask import jsonify
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token
 
-from security import authenticate
-from user import User
+from helpers.security_helper import authenticate
+from models.user_model import User
 
 
 class UserRegister(Resource):

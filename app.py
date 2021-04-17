@@ -4,9 +4,9 @@ from flask import Flask, Blueprint
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from auth import UserRegister, UserLogin
-from item import Item, ItemList
-from auth_with_refresh import auth_with_refresh
+from resources.item_resource import Item, ItemList
+from controllers.auth_controller import UserRegister, UserLogin
+from controllers.auth_with_refresh_controller import auth_with_refresh
 
 
 app = Flask(__name__)

@@ -18,8 +18,8 @@ from flask_jwt_extended import JWTManager
 from flask_jwt_extended import set_access_cookies
 from flask_jwt_extended import unset_jwt_cookies
 
-from security import authenticate
-from user import User
+from helpers.security_helper import authenticate
+from models.user_model import User
 
 auth_with_refresh = Blueprint('auth_with_refresh', __name__)
 
