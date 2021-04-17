@@ -44,9 +44,9 @@ api.add_resource(StoreListResource, '/stores')
 api.add_resource(ItemResource, '/item/<string:name>')
 api.add_resource(ItemListResource, '/items')
 
-# flask-routes
+# flask-routes 
 app.register_blueprint(auth_with_refresh_bp, url_prefix='/auth')
 
-if __name__ == '__main__':  # will not run this if this file is imported
+if __name__ == '__main__':  # will not run this if this file is imported.
     db.init_app(app)
     app.run(port=5000)
