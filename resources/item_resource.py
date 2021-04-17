@@ -28,32 +28,42 @@ class ItemResource(Resource):
         data = ItemResource.parser.parse_args()
         item = Item(None, name, data['price'])
         try:
-            item.insert()
+            item.save_to_db()  # item.insert()
         except sqlite3.Error:  # pylint: disable=no-member
             return {'message': 'An error occured'}, 500
         return item.json(), 201
 
     @jwt_required()
     def put(self, name):
-        pass
         data = ItemResource.parser.parse_args()
         price = data['price']
-        old_item = Item.get_by_name(name)
-        if old_item:
-            old_item.price = price
-            try:
-                old_item.update()
-                # Item.update_item(name, price)
-            except sqlite3.Error:  # pylint: disable=no-member
-                return {'message': 'An error occured'}, 500
-            return old_item.json(), 202
-        else:
+        item = Item.get_by_name(name)
+        is_new = item is None
+        if is_new:
             item = Item(None, name, price)
-            try:
-                item.insert()
-            except sqlite3.Error:  # pylint: disable=no-member
-                return {'message': 'An error occured'}, 500
-            return item.json(), 201
+        else:
+            item.price = price
+        try:
+            item.save_to_db()
+        except sqlite3.Error:  # pylint: disable=no-member
+            return {'message': 'An error occured'}, 500
+        return item.json(), 201 if is_new else 202
+
+        # if item:
+        #     item.price = price
+        #     try:
+        #         item.save_to_db()  # old_item.update()
+        #         # Item.update_item(name, price)
+        #     except sqlite3.Error:  # pylint: disable=no-member
+        #         return {'message': 'An error occured'}, 500
+        #     return item.json(), 202
+        # else:
+        #     item = Item(None, name, price)
+        #     try:
+        #         item.save_to_db()  # item.insert()
+        #     except sqlite3.Error:  # pylint: disable=no-member
+        #         return {'message': 'An error occured'}, 500
+        #     return item.json(), 201
 
     @jwt_required()
     def delete(self, name):
@@ -61,7 +71,7 @@ class ItemResource(Resource):
         if not item:
             return {'message': 'item not found'}, 404
         try:
-            item.delete()
+            item.delete_from_db()  # item.delete()
         except sqlite3.Error:  # pylint: disable=no-member
             return {'message': 'An error occured'}, 500
         return {'message': 'item deleted'}, 200
@@ -71,7 +81,7 @@ class ItemListResource(Resource):
     @jwt_required()
     def get(self):
         try:
-            items = Item.get_all()
+            items = Item.get_all()  # items = Item.get_all()
         except sqlite3.Error:  # pylint: disable=no-member
             return {'message': 'An error occured'}, 500
         # https://flask-jwt-extended.readthedocs.io/en/stable/add_custom_data_claims/

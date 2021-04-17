@@ -16,7 +16,7 @@ class UserRegisterResource(Resource):
         data = UserRegisterResource.parser.parse_args()
         username = data['username']
         password = data['password']
-        if User.find_by_username(username):
+        if User.get_by_username(username):
             return {'message': 'User already exists.'}, 400
 
         connection = sqlite3.connect('../data.db')  # pylint: disable=no-member

@@ -83,7 +83,7 @@ def logout():
 def register():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
-    if User.find_by_username(username):
+    if User.get_by_username(username):
         return {'message': 'User already exists.'}, 400
-    user = User(None, username, password).insert()
+    user = User(None, username, password).save_to_db()  # user = User(None, username, password).insert()
     return {"message": "User created."}, 201
