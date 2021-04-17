@@ -21,7 +21,7 @@ from flask_jwt_extended import unset_jwt_cookies
 from helpers.security_helper import authenticate
 from models.user_model import User
 
-auth_with_refresh = Blueprint('auth_with_refresh', __name__)
+auth_with_refresh_bp = Blueprint('auth_with_refresh', __name__)
 
 
 # Using an `after_app_request` callback to refresh the access token
@@ -30,7 +30,7 @@ auth_with_refresh = Blueprint('auth_with_refresh', __name__)
 # after_app_request like Flask.after_request() but for a blueprint.
 # Such a function is executed after each request, even if outside of the blueprint.
 # see https://tedboy.github.io/flask/generated/generated/flask.Blueprint.after_app_request.html
-@auth_with_refresh.after_app_request
+@auth_with_refresh_bp.after_app_request
 def refresh_expiring_jwts(response):
     """ after a request, refresh the JWT access cookie if it is within 30 minutes of expiring
     """
@@ -48,7 +48,7 @@ def refresh_expiring_jwts(response):
         return response
 
 
-@auth_with_refresh.route("/login-with-refresh", methods=["POST"])
+@auth_with_refresh_bp.route("/login-with-refresh", methods=["POST"])
 def login():
     """ login user and set an JWT access cookie
     """
@@ -70,20 +70,20 @@ def login():
     return response
 
 
-@auth_with_refresh.route("/logout-with-refresh", methods=["POST"])
+@auth_with_refresh_bp.route("/logout-with-refresh", methods=["POST"])
 def logout():
     """ logout user by unset the JWT access cookie
-    """    
+    """
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
 
 
-@auth_with_refresh.route("/register-with-refresh", methods=['POST'])
+@auth_with_refresh_bp.route("/register-with-refresh", methods=['POST'])
 def register():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
     if User.find_by_username(username):
         return {'message': 'User already exists.'}, 400
-    User.insert_user(username, password)
+    user = User(None, username, password).insert()
     return {"message": "User created."}, 201

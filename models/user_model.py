@@ -4,43 +4,50 @@ import sqlite3
 class User:
     def __init__(self, _id, username, password):    # id is a Python keyword, use _id instead
         self.id = _id
-        self.username = username  # sdfasdf
+        self.username = username
         self.password = password
+
+    def json(self):
+        return {'id': self.id, 'username': self.username, 'password': self.password}
 
     @classmethod
     def find_by_username(cls, username):
         connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
-        connection.row_factory = sqlite3.Row  # pylint: disable=no-member
+        # connection.row_factory = sqlite3.Row  # pylint: disable=no-member
         cursor = connection.cursor()
-        result = cursor.execute("SELECT id, username, password FROM USERS WHERE username = ?", (username,))
+        sql = \
+            "SELECT "\
+            "id, username, password "\
+            "FROM users WHERE username = ?"
+        result = cursor.execute(sql, (username,))
         row = result.fetchone()
-        if row:
-            user = cls(row['id'], row['username'], row['password'])
-        else:
-            user = None
         connection.close()
-        return user
+        if row:
+            return cls(*row)  # argument unpacking
 
     @classmethod
     def find_by_id(cls, _id):
         connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
         # https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.row_factory
-        connection.row_factory = sqlite3.Row   # pylint: disable=no-member
+        # connection.row_factory = sqlite3.Row   # pylint: disable=no-member
         cursor = connection.cursor()
-        result = cursor.execute("SELECT id, username, password FROM users WHERE id = ?", (_id,))
+        sql = \
+            "SELECT "\
+            "id, username, password "\
+            "FROM users WHERE id = ?"
+        result = cursor.execute(sql, (_id,))
         row = result.fetchone()
-        if row:
-            user = cls(row['id'], row['username'], row['password'])
-        else:
-            user = None
         connection.close()
-        return user
+        if row:
+            return cls(*row)  # argument unpacking
 
-    @classmethod
-    def insert_user(cls, username, password):
+    def insert(self):
         connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
         cursor = connection.cursor()
-        cursor.execute("INSERT INTO users VALUES (NULL, ?, ?)", (username, password))
+        sql = "INSERT INTO users VALUES (NULL, ?, ?)"
+        cursor.execute(sql, (self.username, self.password))
         connection.commit()
+        # get the auto generated id from sqlite3's last_insert_rowid() function
+        self.id = cursor.execute("select last_insert_rowid()").fetchone()[0]
         connection.close()
-        return True
+        return self

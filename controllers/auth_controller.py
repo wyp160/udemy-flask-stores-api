@@ -7,13 +7,13 @@ from helpers.security_helper import authenticate
 from models.user_model import User
 
 
-class UserRegister(Resource):
+class UserRegisterResource(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('username', type=str, required=True, help="This field can not be blank.")
     parser.add_argument('password', type=str, required=True, help="This field can not be blank.")
 
     def post(self):
-        data = UserRegister.parser.parse_args()
+        data = UserRegisterResource.parser.parse_args()
         username = data['username']
         password = data['password']
         if User.find_by_username(username):
@@ -27,7 +27,7 @@ class UserRegister(Resource):
         return {"message": "User created."}, 201
 
 
-class UserLogin(Resource):
+class UserLoginResource(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('username', type=str, required=True, help="This field can not be blank.")
     parser.add_argument('password', type=str, required=True, help="This field can not be blank.")
@@ -44,7 +44,7 @@ class UserLogin(Resource):
         returns:
             access_token (string): a jwt access token
         """
-        data = UserLogin.parser.parse_args()
+        data = UserLoginResource.parser.parse_args()
         username = data['username']
         password = data['password']
 

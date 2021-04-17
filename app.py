@@ -4,9 +4,9 @@ from flask import Flask, Blueprint
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from resources.item_resource import Item, ItemList
-from controllers.auth_controller import UserRegister, UserLogin
-from controllers.auth_with_refresh_controller import auth_with_refresh
+from controllers.auth_controller import UserRegisterResource, UserLoginResource
+from controllers.auth_with_refresh_controller import auth_with_refresh_bp
+from resources.item_resource import ItemResource, ItemListResource
 
 
 app = Flask(__name__)
@@ -26,11 +26,11 @@ jwt = JWTManager(app)
 api = Api(app)
 
 
-api.add_resource(UserRegister, '/register')  # http://ssfd.com/register
-api.add_resource(UserLogin, '/login')
-api.add_resource(Item, '/item/<string:name>')
-api.add_resource(ItemList, '/items')
-app.register_blueprint(auth_with_refresh)
+api.add_resource(UserRegisterResource, '/register')  # http://ssfd.com/register
+api.add_resource(UserLoginResource, '/login')
+api.add_resource(ItemResource, '/item/<string:name>')
+api.add_resource(ItemListResource, '/items')
+app.register_blueprint(auth_with_refresh_bp, url_prefix='/auth')
 
 if __name__ == '__main__':  # will not run this if this file is imported
     app.run(port=5000)
