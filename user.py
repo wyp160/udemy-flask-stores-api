@@ -4,7 +4,7 @@ import sqlite3
 class User:
     def __init__(self, _id, username, password):    # id is a Python keyword, use _id instead
         self.id = _id
-        self.username = username
+        self.username = username  # sdfasdf
         self.password = password
 
     @classmethod
@@ -35,3 +35,12 @@ class User:
             user = None
         connection.close()
         return user
+
+    @classmethod
+    def insert_user(cls, username, password):
+        connection = sqlite3.connect('../data.db')  # pylint: disable=no-member
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO users VALUES (NULL, ?, ?)", (username, password))
+        connection.commit()
+        connection.close()
+        return True

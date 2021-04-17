@@ -1,6 +1,6 @@
 import sqlite3
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity, get_jwt_header
 from werkzeug.security import safe_str_cmp  # a safe string compare to avoid ascii, unicode encoding errors.
 
 items = []
@@ -121,4 +121,13 @@ class ItemList(Resource):
             items = Item.get_all()
         except sqlite3.Error:  # pylint: disable=no-member
             return {'message': 'An error occured'}, 500
-        return {'items': items}
+        # https://flask-jwt-extended.readthedocs.io/en/stable/add_custom_data_claims/
+        claims = get_jwt()
+        identity = get_jwt_identity()
+        jwt_header = get_jwt_header()
+        return {
+            'items': items,
+            "additional_claims": claims["note"],
+            'identity': identity,
+            'jwt_header': jwt_header
+        }
