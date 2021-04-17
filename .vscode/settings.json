@@ -5,9 +5,14 @@
     "python.formatting.autopep8Args": ["--ignore=E501"],
 
     "python.linting.pycodestyleEnabled": true,
-    "python.linting.pylintEnabled": false,
+    "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.linting.pycodestyleArgs": [
         "--ignore=E501"
     ],
+    "python.linting.pylintArgs": [
+        "--load-plugins",
+        "pylint_flask_sqlalchemy",
+        "pylint_flask",
+    ] 
 }

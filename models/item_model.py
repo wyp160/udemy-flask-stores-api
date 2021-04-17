@@ -7,14 +7,18 @@ class Item(db.Model):
     name = db.Column(db.String(80))
     price = db.Column(db.Float(precision=2))
 
-    def __init__(self, _id, name, price):
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+    store = db.relationship('Store')  # not need at table create time
+
+    def __init__(self, _id, name, price, store_id):
         self.id = _id
         self.name = name
         self.price = price
+        self.store_id = store_id
 
     def json(self):  # convert to dict in correct order
-        return {'id': self.id, 'name': self.name, 'price': self.price}
-    
+        return {'id': self.id, 'name': self.name, 'price': self.price, 'store_id': self.store_id}
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()

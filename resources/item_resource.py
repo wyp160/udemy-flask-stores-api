@@ -1,8 +1,6 @@
-from sqlalchemy.exc import SQLAlchemyError
-
-from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity, get_jwt_header
-from werkzeug.security import safe_str_cmp  # a safe string compare to avoid ascii, unicode encoding errors.
+from flask_restful import Resource, reqparse
+from sqlalchemy.exc import SQLAlchemyError
 
 from models.item_model import Item
 
@@ -11,6 +9,8 @@ class ItemResource(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('price', type=float, required=True,
                         help='This field can not be blank.')
+    parser.add_argument('store_id', type=int, required=True,
+                        help='Every item needs a store id.')
 
     @jwt_required()
     def get(self, name):
@@ -27,7 +27,7 @@ class ItemResource(Resource):
         if Item.get_by_name(name):
             return {'message': 'An item with the name \'{}\' already exist.'.format(name)}, 400
         data = ItemResource.parser.parse_args()
-        item = Item(None, name, data['price'])
+        item = Item(None, name, **data)
         try:
             item.save_to_db()  # item.insert()
         except SQLAlchemyError as e:
@@ -38,12 +38,14 @@ class ItemResource(Resource):
     def put(self, name):
         data = ItemResource.parser.parse_args()
         price = data['price']
+        store_id = data['store_id']
         item = Item.get_by_name(name)
         is_new = item is None
         if is_new:
-            item = Item(None, name, price)
+            item = Item(None, name, **data)  # dict unpack
         else:
             item.price = price
+            item.store_id = store_id
         try:
             item.save_to_db()
         except SQLAlchemyError as e:

@@ -8,6 +8,7 @@ from db import db
 from controllers.auth_controller import UserRegisterResource, UserLoginResource
 from controllers.auth_with_refresh_controller import auth_with_refresh_bp
 from resources.item_resource import ItemResource, ItemListResource
+from resources.store_resource import StoreResource, StoreListResource
 
 
 app = Flask(__name__)
@@ -38,6 +39,8 @@ def create_tables():
 api = Api(app)
 api.add_resource(UserRegisterResource, '/register')  # http://ssfd.com/register
 api.add_resource(UserLoginResource, '/login')
+api.add_resource(StoreResource, '/store/<string:name>')
+api.add_resource(StoreListResource, '/stores')
 api.add_resource(ItemResource, '/item/<string:name>')
 api.add_resource(ItemListResource, '/items')
 
