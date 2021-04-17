@@ -85,5 +85,8 @@ def register():
     password = request.json.get("password", None)
     if User.get_by_username(username):
         return {'message': 'User already exists.'}, 400
-    user = User(None, username, password).save_to_db()  # user = User(None, username, password).insert()
+    try:
+        user = User(None, username, password).save_to_db()  # user = User(None, username, password).insert()
+    except SQLAlchemyError as e:
+        return {'message': 'An error occured.({})'.format(e.__dict__)}, 500
     return {"message": "User created."}, 201

@@ -1,4 +1,5 @@
-import sqlite3
+from sqlalchemy.exc import SQLAlchemyError
+
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity, get_jwt_header
 from werkzeug.security import safe_str_cmp  # a safe string compare to avoid ascii, unicode encoding errors.
@@ -15,8 +16,8 @@ class ItemResource(Resource):
     def get(self, name):
         try:
             item = Item.get_by_name(name)
-        except sqlite3.Error:  # pylint: disable=no-member
-            return {'message': 'An error occured'}, 500
+        except SQLAlchemyError as e:
+            return {'message': 'An error occured.({})'.format(e.__dict__)}, 500
         if not item:
             return {'message': 'item not found'}, 404
         return item.json()
@@ -29,8 +30,8 @@ class ItemResource(Resource):
         item = Item(None, name, data['price'])
         try:
             item.save_to_db()  # item.insert()
-        except sqlite3.Error:  # pylint: disable=no-member
-            return {'message': 'An error occured'}, 500
+        except SQLAlchemyError as e:
+            return {'message': 'An error occured.({})'.format(e.__dict__)}, 500
         return item.json(), 201
 
     @jwt_required()
@@ -45,8 +46,8 @@ class ItemResource(Resource):
             item.price = price
         try:
             item.save_to_db()
-        except sqlite3.Error:  # pylint: disable=no-member
-            return {'message': 'An error occured'}, 500
+        except SQLAlchemyError as e:
+            return {'message': 'An error occured.({})'.format(e.__dict__)}, 500
         return item.json(), 201 if is_new else 202
 
         # if item:
@@ -72,8 +73,8 @@ class ItemResource(Resource):
             return {'message': 'item not found'}, 404
         try:
             item.delete_from_db()  # item.delete()
-        except sqlite3.Error:  # pylint: disable=no-member
-            return {'message': 'An error occured'}, 500
+        except SQLAlchemyError as e:
+            return {'message': 'An error occured.({})'.format(e.__dict__)}, 500
         return {'message': 'item deleted'}, 200
 
 
@@ -82,14 +83,14 @@ class ItemListResource(Resource):
     def get(self):
         try:
             items = Item.get_all()  # items = Item.get_all()
-        except sqlite3.Error:  # pylint: disable=no-member
-            return {'message': 'An error occured'}, 500
+        except SQLAlchemyError as e:
+            return {'message': 'An error occured.({})'.format(e.__dict__)}, 500
         # https://flask-jwt-extended.readthedocs.io/en/stable/add_custom_data_claims/
         claims = get_jwt()
         identity = get_jwt_identity()
         jwt_header = get_jwt_header()
         return {
-            'items': [item.json() for item in items] if items else [],
+            'items': [item.json() for item in items],
             "additional_claims": claims["note"],
             'identity': identity,
             'jwt_header': jwt_header
