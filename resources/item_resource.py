@@ -79,7 +79,7 @@ class ItemListResource(Resource):
         identity = get_jwt_identity()
         jwt_header = get_jwt_header()
         return {
-            'items': [item.json() for item in items],
+            'items': [item.json() for item in items] if items else [],
             "additional_claims": claims["note"],
             'identity': identity,
             'jwt_header': jwt_header
