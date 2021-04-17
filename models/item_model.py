@@ -46,7 +46,7 @@ class Item(db.Model):
         # return self
 
     def delete_from_db(self):
-        db.session.delete()
+        db.session.delete(self)
         db.session.commit()
 
     # def delete(self):
