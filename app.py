@@ -3,8 +3,8 @@ from datetime import timedelta
 from flask import Flask, Blueprint
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-
-from db import db
+# comment
+from db import db 
 from controllers.auth_controller import UserRegisterResource, UserLoginResource
 from controllers.auth_with_refresh_controller import auth_with_refresh_bp
 from resources.item_resource import ItemResource, ItemListResource
