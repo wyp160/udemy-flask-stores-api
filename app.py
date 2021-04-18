@@ -28,12 +28,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # True, Flask-SQLAlchemy w
 jwt = JWTManager(app)
 
 
-# database
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
-
-
 # flask-restful routes
 # api_bp = Blueprint('api', __name__)  # set a route segment for api
 api = Api(app)
@@ -48,5 +42,10 @@ api.add_resource(ItemListResource, '/items')
 app.register_blueprint(auth_with_refresh_bp, url_prefix='/auth')
 
 if __name__ == '__main__':  # will not run this if this file is imported.
+    # database
+    @app.before_first_request
+    def create_tables():
+        db.create_all()
+
     db.init_app(app)
     app.run(port=5000)
