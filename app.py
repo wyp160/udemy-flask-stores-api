@@ -21,7 +21,7 @@ app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this in your code!
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(seconds=3600)  # suggest value: seconds=3600 for JWT to expire within an hour
 app.config['PROPAGATE_EXCEPTIONS'] = True  # Exceptions are re-raised rather than being handled by the app’s error handlers, Flask-JwT-extended error handling, see https://github.com/vimalloc/flask-jwt-extended/issues/20
 # database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + '../data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + 'database/data.db'  # + '../data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # True, Flask-SQLAlchemy will track modifications of objects and emit signals. The default is None, which enables tracking but issues a warning that it will be disabled by default in the future. This requires extra memory and should be disabled if not needed.
 
 # jwt
