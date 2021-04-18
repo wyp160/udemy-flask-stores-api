@@ -1,0 +1,54 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: win-64
+flask
+flask-jwt-extended
+flask-restful
+flask-sqlalchemy
+werkzeug
+uwsgi
+
+# flask=1.1.2=pyhd3eb1b0_0
+# flask-jwt-extended=4.1.0=pyhd3eb1b0_0
+# flask-restful=0.3.8=pyhd3eb1b0_0
+# flask-sqlalchemy=2.5.1=pyhd3eb1b0_0
+# werkzeug=1.0.1=pyhd3eb1b0_0
+
+# aniso8601=9.0.1=pyhd3eb1b0_0
+# astroid=2.5=py38haa95532_1
+# autopep8=1.5.6=pyhd3eb1b0_0
+# ca-certificates=2021.4.13=haa95532_1
+# certifi=2020.12.5=py38haa95532_0
+# cffi=1.14.5=py38hcd4344a_0
+# click=7.1.2=pyhd3eb1b0_0
+# colorama=0.4.4=pyhd3eb1b0_0
+# cryptography=2.9.2=py38h7a1dbc1_0
+# greenlet=1.0.0=py38hd77b12b_2
+# idna=3.1=pyhd3eb1b0_0
+# isort=5.8.0=pyhd3eb1b0_0
+# itsdangerous=1.1.0=pyhd3eb1b0_0
+# jinja2=2.11.3=pyhd3eb1b0_0
+# lazy-object-proxy=1.6.0=py38h2bbff1b_0
+# markupsafe=1.1.1=py38he774522_0
+# mccabe=0.6.1=py38_1
+# openssl=1.1.1k=h2bbff1b_0
+# pip=21.0.1=py38haa95532_0
+# pycodestyle=2.7.0=pyhd3eb1b0_0
+# pycparser=2.20=py_2
+# pyjwt=2.0.1=py38haa95532_0
+# pylint=2.7.4=py38haa95532_1
+# pyodbc=4.0.30=py38ha925a31_0
+# python=3.8.8=hdbf39b2_5
+# python-dateutil=2.8.1=pyhd3eb1b0_0
+# pytz=2021.1=pyhd3eb1b0_0
+# rope=0.18.0=py_0
+# setuptools=52.0.0=py38haa95532_0
+# six=1.15.0=py38haa95532_0
+# sqlalchemy=1.4.7=py38h2bbff1b_0
+# sqlite=3.35.4=h2bbff1b_0
+# toml=0.10.2=pyhd3eb1b0_0
+# vc=14.2=h21ff451_1
+# vs2015_runtime=14.27.29016=h5e58377_2
+# wheel=0.36.2=pyhd3eb1b0_0
+# wincertstore=0.2=py38_0
+# wrapt=1.12.1=py38he774522_1
