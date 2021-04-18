@@ -1,3 +1,4 @@
+# this script will run by heroku
 from app import app
 from db import db
 
